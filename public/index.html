@@ -33,3 +33,30 @@
     <script src="app.js"></script>
 </body>
 </html>
+<header>
+    <h1>Sapiens AI</h1>
+    <nav class="tabs">
+        <button onclick="switchTab('research')" id="tab-research" class="active-tab">Research</button>
+        <button onclick="switchTab('chat')" id="tab-chat">Assistant Chat</button>
+    </nav>
+</header>
+
+<!-- Research Tab (Existing Search) -->
+<div id="research-content">
+    <section class="search-area">
+        <div class="input-row">
+            <input type="text" id="userInput" placeholder="Search databases...">
+            <button onclick="performSearch()">Search</button>
+        </div>
+    </section>
+    <main id="outputArea"></main>
+</div>
+
+<!-- Chat Tab (New Chatbot) -->
+<div id="chat-content" class="hidden">
+    <div id="chatBox" class="chat-display"></div>
+    <div class="input-row">
+        <input type="text" id="chatInput" placeholder="Ask a follow-up question...">
+        <button onclick="sendChat()">Send</button>
+    </div>
+</div>
