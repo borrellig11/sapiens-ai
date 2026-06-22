@@ -1,0 +1,14 @@
+node_modules/
+*.db
+*.sqlite
+.DS_Store
+.env
+.env.local
+*.log
+npm-debug.log*
+dist/
+build/
+.vscode/
+.idea/
+*.swp
+*.swo
