@@ -54,3 +54,43 @@ async function loadHistory() {
 }
 
 window.onload = loadHistory;
+function switchTab(tab) {
+    if (tab === 'research') {
+        document.getElementById('research-content').classList.remove('hidden');
+        document.getElementById('chat-content').classList.add('hidden');
+        document.getElementById('tab-research').classList.add('active-tab');
+        document.getElementById('tab-chat').classList.remove('active-tab');
+    } else {
+        document.getElementById('research-content').classList.add('hidden');
+        document.getElementById('chat-content').classList.remove('hidden');
+        document.getElementById('tab-chat').classList.add('active-tab');
+        document.getElementById('tab-research').classList.remove('active-tab');
+    }
+}
+
+async function sendChat() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value;
+    if (!msg) return;
+
+    const chatBox = document.getElementById('chatBox');
+    
+    // 1. Show user message
+    chatBox.innerHTML += `<div class="chat-bubble user-msg">${msg}</div>`;
+    input.value = "";
+
+    try {
+        const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+        });
+        const data = await res.json();
+
+        // 2. Show AI message
+        chatBox.innerHTML += `<div class="chat-bubble ai-msg">${data.reply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    } catch (err) {
+        alert("Chat error");
+    }
+}
