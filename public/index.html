@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sapiens AI - Free Studying Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <h1>Sapiens AI</h1>
+                </div>
+                <p class="tagline">Free AI-Powered Studying Platform</p>
+            </div>
+            <nav class="navbar">
+                <button class="nav-btn" onclick="showHistory()"><i class="fas fa-history"></i> History</button>
+                <button class="nav-btn" onclick="showSaved()"><i class="fas fa-bookmark"></i> Saved</button>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <section class="search-section" id="searchSection">
+                <div class="search-container">
+                    <h2>What would you like to learn about?</h2>
+                    <form id="searchForm" onsubmit="handleSearch(event)">
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                id="searchInput" 
+                                placeholder="Ask anything... (e.g., 'How does photosynthesis work?', 'Explain quantum mechanics')"
+                                autocomplete="off"
+                            >
+                            <button type="submit" class="search-btn"><i class="fas fa-search"></i> Search</button>
+                        </div>
+                    </form>
+                    <div class="suggestions">
+                        <p>Try asking about:</p>
+                        <button class="suggestion-btn" onclick="searchQuery('What is machine learning')">Machine Learning</button>
+                        <button class="suggestion-btn" onclick="searchQuery('How do mitochondria work')">Biology</button>
+                        <button class="suggestion-btn" onclick="searchQuery('Explain photosynthesis')">Photosynthesis</button>
+                        <button class="suggestion-btn" onclick="searchQuery('What is artificial intelligence')">AI Basics</button>
+                    </div>
+                </div>
+            </section>
+
+            <div id="loadingState" class="loading-state hidden">
+                <div class="spinner"></div>
+                <p>Searching across multiple sources...</p>
+            </div>
+
+            <section id="resultsSection" class="results-section hidden">
+                <div class="results-container">
+                    <div class="response-container">
+                        <h2 id="resultQuery"></h2>
+                        <div id="responseContent" class="response-content"></div>
+                        <div class="response-actions">
+                            <button class="action-btn" onclick="saveCurrentResponse()"><i class="fas fa-bookmark"></i> Save Response</button>
+                            <button class="action-btn" onclick="copyToClipboard()"><i class="fas fa-copy"></i> Copy</button>
+                            <button class="action-btn" onclick="newSearch()"><i class="fas fa-search"></i> New Search</button>
+                        </div>
+                    </div>
+
+                    <aside class="sources-panel">
+                        <h3><i class="fas fa-book"></i> Sources</h3>
+                        <div id="sourcesList" class="sources-list"></div>
+                        <div class="metadata">
+                            <p><strong>Search Time:</strong> <span id="searchTime">0</span>s</p>
+                            <p><strong>Sources:</strong> <span id="sourceCount">0</span></p>
+                            <p><strong>Tokens:</strong> <span id="tokenCount">0</span></p>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <section id="historySection" class="history-section hidden">
+                <h2>Search History</h2>
+                <div id="historyList" class="list-container"></div>
+            </section>
+
+            <section id="savedSection" class="saved-section hidden">
+                <h2>Saved Responses</h2>
+                <div id="savedList" class="list-container"></div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Sapiens AI © 2024 | Free & Open-Source Studying Platform</p>
+            <p>Sources: Wikipedia, MIT OpenCourseWare, Khan Academy, Arxiv, and more</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
