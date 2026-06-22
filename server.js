@@ -48,3 +48,6 @@ app.listen(PORT, () => {
   console.log(`🧠 Sapiens AI is running on http://localhost:${PORT}`);
   console.log('📚 Free studying platform powered by AI');
 });
+const chatRoutes = require('./routes/chat'); // Add this at top
+// ...
+app.use('/api/chat', chatRoutes); // Add this near other routes
