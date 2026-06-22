@@ -218,3 +218,36 @@ button:hover {
     color: var(--text-main);
     border: 1px solid var(--border);
 }
+/* Article Page Styling */
+#outputArea {
+    line-height: 1.8; /* More space between lines for reading */
+    font-size: 1.1rem;
+    text-align: justify; /* Newspaper style */
+}
+
+#outputArea h1 {
+    font-size: 2.8rem;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+#outputArea h2 {
+    font-size: 1.4rem;
+    margin-top: 40px;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+}
+
+#outputArea p {
+    margin-bottom: 25px;
+    color: var(--text-main);
+}
+
+/* Horizontal Rule */
+hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+}
