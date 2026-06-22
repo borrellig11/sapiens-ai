@@ -1,62 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sapiens AI | Research</title>
-    <!-- Importing a cleaner font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Sapiens AI</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="app-container">
+    <div class="container">
         <header>
             <h1>Sapiens AI</h1>
-            <p>Gathering knowledge from the world's open libraries.</p>
+            <nav>
+                <button onclick="tab('research')" id="t1" class="active">Research</button>
+                <button onclick="tab('chat')" id="t2">Assistant</button>
+            </nav>
         </header>
 
-        <section class="search-area">
-            <div class="input-row">
-                <input type="text" id="userInput" placeholder="What are you researching today?">
-                <button onclick="performSearch()">Search</button>
+        <div id="research-sec">
+            <div class="search-bar">
+                <input type="text" id="q" placeholder="Enter research topic...">
+                <button onclick="doSearch()">Generate Page</button>
             </div>
-            <div id="loader" class="hidden">Consulting academic databases...</div>
-        </section>
+            <div id="output"></div>
+        </div>
 
-        <main id="outputArea"></main>
+        <div id="chat-sec" class="hide">
+            <div id="chat-box"></div>
+            <div class="search-bar">
+                <input type="text" id="cm" placeholder="Ask follow-up...">
+                <button onclick="doChat()">Send</button>
+            </div>
+        </div>
 
-        <section class="history-area">
-            <h3>Recent History</h3>
-            <div id="historyList"></div>
-        </section>
+        <footer>
+            <h3>History</h3>
+            <div id="hist"></div>
+        </footer>
     </div>
     <script src="app.js"></script>
 </body>
 </html>
-<header>
-    <h1>Sapiens AI</h1>
-    <nav class="tabs">
-        <button onclick="switchTab('research')" id="tab-research" class="active-tab">Research</button>
-        <button onclick="switchTab('chat')" id="tab-chat">Assistant Chat</button>
-    </nav>
-</header>
-
-<!-- Research Tab (Existing Search) -->
-<div id="research-content">
-    <section class="search-area">
-        <div class="input-row">
-            <input type="text" id="userInput" placeholder="Search databases...">
-            <button onclick="performSearch()">Search</button>
-        </div>
-    </section>
-    <main id="outputArea"></main>
-</div>
-
-<!-- Chat Tab (New Chatbot) -->
-<div id="chat-content" class="hidden">
-    <div id="chatBox" class="chat-display"></div>
-    <div class="input-row">
-        <input type="text" id="chatInput" placeholder="Ask a follow-up question...">
-        <button onclick="sendChat()">Send</button>
-    </div>
-</div>
