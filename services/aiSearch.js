@@ -3,53 +3,36 @@ const axios = require('axios');
 class AISearch {
     async getDetailedPage(query) {
         try {
-            // A professional header tells the database we are a safe educational tool
-            const config = { 
-                headers: { 
-                    'User-Agent': 'SapiensStudyApp/1.0 (Educational Research Tool; mailto:contact@example.com)' 
-                },
-                timeout: 10000 
-            };
+            const config = { headers: { 'User-Agent': 'SapiensAI/1.0' } };
 
-            // STEP 1: Search for the most accurate topic title
+            // 1. Find the best matching title
             const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
             const searchRes = await axios.get(searchUrl, config);
             
             if (!searchRes.data.query || searchRes.data.query.search.length === 0) {
-                throw new Error("Topic not found");
+                return { title: "No Result", intro: "Topic not found.", background: "", concepts: "", url: "#" };
             }
+            const topTitle = searchRes.data.query.search[0].title;
 
-            const bestMatch = searchRes.data.query.search[0].title;
+            // 2. Get the full detailed extract
+            const detailUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&titles=${encodeURIComponent(topTitle)}&format=json&origin=*`;
+            const detailRes = await axios.get(detailUrl, config);
+            const pages = detailRes.data.query.pages;
+            const pageId = Object.keys(pages)[0];
+            const extract = pages[pageId].extract || "";
 
-            // STEP 2: Get the high-speed "Summary" (Britannica Style)
-            const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(bestMatch.replace(/ /g, '_'))}`;
-            const summaryRes = await axios.get(summaryUrl, config);
-            const data = summaryRes.data;
-
-            // STEP 3: Get deeper content sections
-            const contentUrl = `https://en.wikipedia.org/api/rest_v1/page/mobile-sections/${encodeURIComponent(bestMatch.replace(/ /g, '_'))}`;
-            const contentRes = await axios.get(contentUrl, config);
-            
-            // Extract the first few sections for "Analysis"
-            const sections = contentRes.data.remaining.sections || [];
-            const deepAnalysis = sections.slice(0, 3).map(s => `<h4>${s.line}</h4><p>${s.text.replace(/<[^>]*>/g, '').substring(0, 500)}...</p>`).join('');
+            const paragraphs = extract.split('\n').filter(p => p.trim().length > 20);
 
             return {
-                title: data.title,
-                intro: data.extract,
-                description: data.description || "General Academic Topic",
-                detailed: deepAnalysis,
-                url: data.content_urls.desktop.page
+                title: topTitle,
+                intro: paragraphs[0] || "No summary available.",
+                background: paragraphs.slice(1, 4).join('\n\n'),
+                concepts: paragraphs.slice(4, 10).join('\n\n'),
+                url: `https://en.wikipedia.org/wiki/${encodeURIComponent(topTitle)}`
             };
-
         } catch (e) {
-            console.error("STABLE_ENGINE_ERROR:", e.message);
-            return {
-                title: "Connection Alert",
-                intro: "The database is currently unreachable. Please ensure you are connected to the internet and try again.",
-                detailed: "Error details: " + e.message,
-                url: "#"
-            };
+            console.error("Search Error:", e);
+            return { title: "Error", intro: "Connection failed.", background: "", concepts: "", url: "#" };
         }
     }
 }
