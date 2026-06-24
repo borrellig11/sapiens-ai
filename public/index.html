@@ -3,41 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sapiens AI</title>
+    <title>Sapiens AI | Deep Research</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="dot-grid"></div>
+    <div class="blueprint-dots"></div>
+
+    <!-- Top Left Google-Site Style Navigation -->
+    <nav class="history-nav">
+        <span class="nav-header">Archive History</span>
+        <div id="hist" class="history-stack"></div>
+    </nav>
 
     <div class="app-container">
-        <!-- Google Site Style Navigation -->
-        <nav class="side-nav">
-            <span class="nav-label">Archive / History</span>
-            <div id="hist" class="history-list"></div>
-        </nav>
-
-        <header class="main-header">
-            <div class="branding">
-                <div class="logo-mark"></div>
+        <header class="hero">
+            <div class="logo-group">
+                <div class="logo-square"></div>
                 <h1>Sapiens AI</h1>
             </div>
-            <p class="subtitle">Global Knowledge Engine</p>
+            <p class="tagline">Educational Synthesis Engine</p>
 
-            <div class="search-box">
-                <div class="input-wrapper">
-                    <input type="text" id="q" placeholder="Enter a topic for research...">
-                    <button onclick="doSearch()">Research</button>
-                </div>
+            <div class="search-wrap">
+                <input type="text" id="q" placeholder="Enter a topic for research...">
+                <button onclick="doSearch()">Research</button>
             </div>
         </header>
 
         <div id="loader" class="hide">
-            <div class="pulse"></div>
-            <p>Gathering data...</p>
+            <div class="loader-line"></div>
+            <p>Accessing Global Knowledge Bases...</p>
         </div>
 
-        <main id="output"></main>
+        <main id="output" class="report-fade-in"></main>
     </div>
     <script src="app.js"></script>
 </body>
