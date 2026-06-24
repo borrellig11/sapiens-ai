@@ -1,40 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sapiens AI</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Sapiens AI</h1>
-            <nav>
-                <button onclick="tab('research')" id="t1" class="active">Research</button>
-                <button onclick="tab('chat')" id="t2">Assistant</button>
-            </nav>
-        </header>
+<div class="container">
+    <header>
+        <h1>Sapiens AI</h1>
+        <p>Global Research Engine</p>
+    </header>
 
-        <div id="research-sec">
-            <div class="search-bar">
-                <input type="text" id="q" placeholder="Enter research topic...">
-                <button onclick="doSearch()">Generate Page</button>
-            </div>
-            <div id="output"></div>
-        </div>
-
-        <div id="chat-sec" class="hide">
-            <div id="chat-box"></div>
-            <div class="search-bar">
-                <input type="text" id="cm" placeholder="Ask follow-up...">
-                <button onclick="doChat()">Send</button>
-            </div>
-        </div>
-
-        <footer>
-            <h3>History</h3>
-            <div id="hist"></div>
-        </footer>
+    <div class="search-bar">
+        <input type="text" id="q" placeholder="Enter topic for deep research...">
+        <button onclick="doSearch()">Generate Report</button>
     </div>
-    <script src="app.js"></script>
-</body>
-</html>
+
+    <div id="loader" class="hide">Searching global databases and academic records...</div>
+    
+    <div id="output">
+        <!-- Results appear here -->
+    </div>
+
+    <footer>
+        <div id="hist"></div>
+    </footer>
+</div>
