@@ -1,21 +1,43 @@
-<div class="container">
-    <header>
-        <h1>Sapiens AI</h1>
-        <p>Global Research Engine</p>
-    </header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sapiens AI | Research</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-wrapper">
+        <header class="hero">
+            <div class="logo-area">
+                <span class="dot"></span>
+                <h1>Sapiens AI</h1>
+            </div>
+            <p class="tagline">The Global Research Synthesis Engine</p>
+            
+            <div class="search-container">
+                <div class="search-input-group">
+                    <input type="text" id="q" placeholder="Enter a topic (e.g. Quantum Computing)...">
+                    <button onclick="doSearch()" id="searchBtn">Generate Report</button>
+                </div>
+            </div>
+        </header>
 
-    <div class="search-bar">
-        <input type="text" id="q" placeholder="Enter topic for deep research...">
-        <button onclick="doSearch()">Generate Report</button>
+        <div id="loader" class="hide">
+            <div class="spinner"></div>
+            <p>Scanning global archives and scholarly databases...</p>
+        </div>
+
+        <main id="output" class="report-area">
+            <!-- Results will fade in here -->
+        </main>
+
+        <footer class="history-footer">
+            <p class="history-label">Recent Explorations</p>
+            <div id="hist" class="history-pills"></div>
+        </footer>
     </div>
-
-    <div id="loader" class="hide">Searching global databases and academic records...</div>
-    
-    <div id="output">
-        <!-- Results appear here -->
-    </div>
-
-    <footer>
-        <div id="hist"></div>
-    </footer>
-</div>
+    <script src="app.js"></script>
+</body>
+</html>
