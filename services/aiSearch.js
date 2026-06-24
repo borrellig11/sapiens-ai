@@ -3,60 +3,51 @@ const axios = require('axios');
 class AISearch {
     async getDetailedPage(query) {
         try {
-            // Mimic a standard Chrome browser to ensure the connection is never blocked
+            // A professional header tells the database we are a safe educational tool
             const config = { 
                 headers: { 
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
+                    'User-Agent': 'SapiensStudyApp/1.0 (Educational Research Tool; mailto:contact@example.com)' 
                 },
-                timeout: 5000 // 5 second timeout limit
+                timeout: 10000 
             };
 
-            // 1. Get General Web Summary from DuckDuckGo (Extremely Reliable)
-            const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
-            const ddgRes = await axios.get(ddgUrl, config);
-
-            // 2. Get Detailed Facts from Wikipedia's simplest API
-            const wikiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query.replace(/ /g, '_'))}`;
-            let wikiData = null;
-            try {
-                const wikiRes = await axios.get(wikiUrl, config);
-                wikiData = wikiRes.data;
-            } catch (e) {
-                // If direct link fails, try a quick search
-                const search = await axios.get(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`, config);
-                if (search.data.query.search[0]) {
-                    const retryTitle = search.data.query.search[0].title;
-                    const retryRes = await axios.get(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(retryTitle.replace(/ /g, '_'))}`, config);
-                    wikiData = retryRes.data;
-                }
+            // STEP 1: Search for the most accurate topic title
+            const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
+            const searchRes = await axios.get(searchUrl, config);
+            
+            if (!searchRes.data.query || searchRes.data.query.search.length === 0) {
+                throw new Error("Topic not found");
             }
 
-            // --- BUILD THE RESPONSE ---
-            const title = wikiData?.title || ddgRes.data.Heading || query;
-            const intro = wikiData?.extract || ddgRes.data.AbstractText || "No immediate summary available for this topic.";
+            const bestMatch = searchRes.data.query.search[0].title;
+
+            // STEP 2: Get the high-speed "Summary" (Britannica Style)
+            const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(bestMatch.replace(/ /g, '_'))}`;
+            const summaryRes = await axios.get(summaryUrl, config);
+            const data = summaryRes.data;
+
+            // STEP 3: Get deeper content sections
+            const contentUrl = `https://en.wikipedia.org/api/rest_v1/page/mobile-sections/${encodeURIComponent(bestMatch.replace(/ /g, '_'))}`;
+            const contentRes = await axios.get(contentUrl, config);
             
-            // Collect related "General Web" links
-            const academicList = ddgRes.data.RelatedTopics ? ddgRes.data.RelatedTopics.slice(0, 5).map(t => ({
-                title: t.Text ? t.Text.substring(0, 50) + "..." : "Related Resource",
-                link: t.FirstURL || "#"
-            })).filter(t => t.link !== "#") : [];
+            // Extract the first few sections for "Analysis"
+            const sections = contentRes.data.remaining.sections || [];
+            const deepAnalysis = sections.slice(0, 3).map(s => `<h4>${s.line}</h4><p>${s.text.replace(/<[^>]*>/g, '').substring(0, 500)}...</p>`).join('');
 
             return {
-                title: title,
-                intro: intro,
-                webSummary: ddgRes.data.AbstractSource ? `Source: ${ddgRes.data.AbstractSource}` : "Source: General Web Archive",
-                detailed: wikiData?.description || "Categorized as General Knowledge.",
-                academicList: academicList,
-                url: wikiData?.content_urls?.desktop?.page || `https://www.google.com/search?q=${encodeURIComponent(query)}`
+                title: data.title,
+                intro: data.extract,
+                description: data.description || "General Academic Topic",
+                detailed: deepAnalysis,
+                url: data.content_urls.desktop.page
             };
 
         } catch (e) {
-            console.error("STABLE ENGINE ERROR:", e.message);
+            console.error("STABLE_ENGINE_ERROR:", e.message);
             return {
-                title: "Research Offline",
-                intro: "The system is having trouble reaching the internet. Please check your connection and try again.",
-                detailed: "Connection Log: " + e.message,
-                academicList: [],
+                title: "Connection Alert",
+                intro: "The database is currently unreachable. Please ensure you are connected to the internet and try again.",
+                detailed: "Error details: " + e.message,
                 url: "#"
             };
         }
