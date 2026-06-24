@@ -3,64 +3,82 @@ const axios = require('axios');
 class AISearch {
     async getDetailedPage(query) {
         try {
-            const config = { headers: { 'User-Agent': 'SapiensAI/1.0' } };
+            const config = { 
+                headers: { 'User-Agent': 'SapiensAI/1.0' },
+                timeout: 8000 // 8 second timeout
+            };
 
-            // 1. Fetch from Wikipedia (Primary Context)
-            const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&titles=${encodeURIComponent(query)}&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrlimit=1&format=json&origin=*`;
+            // STEP 1: Find the most relevant Wikipedia Title
+            const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
+            const searchRes = await axios.get(searchUrl, config);
             
-            // 2. Fetch from DuckDuckGo (General Web Snippet)
+            let targetTitle = query;
+            if (searchRes.data.query && searchRes.data.query.search.length > 0) {
+                targetTitle = searchRes.data.query.search[0].title;
+            }
+
+            // STEP 2: Fetch Data from 3 Sources in Parallel
+            // Wikipedia Content
+            const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&titles=${encodeURIComponent(targetTitle)}&format=json&origin=*`;
+            // Web Snippet
             const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1`;
+            // Academic Papers
+            const academicUrl = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=5`;
 
-            // 3. Fetch from CrossRef (Academic/Scholarly Records)
-            const academicUrl = `https://api.crossref.org/works?query=${encodeURIComponent(query)}&rows=3`;
-
-            const [wikiRes, ddgRes, academicRes] = await Promise.allSettled([
+            const [wikiDetail, ddgDetail, academicDetail] = await Promise.allSettled([
                 axios.get(wikiUrl, config),
                 axios.get(ddgUrl, config),
                 axios.get(academicUrl, config)
             ]);
 
-            // --- PROCESS WIKIPEDIA DATA ---
-            let title = query;
-            let intro = "No general database entry found.";
+            // --- EXTRACT WIKIPEDIA ---
+            let intro = "Academic records for this specific query are currently being synthesized. Please check back shortly or refine your search parameters.";
             let detailed = "";
-            let wikiLink = "#";
+            let url = `https://en.wikipedia.org/wiki/${encodeURIComponent(targetTitle)}`;
 
-            if (wikiRes.status === 'fulfilled' && wikiRes.data.query) {
-                const page = Object.values(wikiRes.data.query.pages)[0];
-                title = page.title;
-                const paragraphs = page.extract.split('\n').filter(p => p.length > 10);
-                intro = paragraphs[0] || intro;
-                detailed = paragraphs.slice(1, 6).join('\n\n');
-                wikiLink = `https://en.wikipedia.org/wiki/${encodeURIComponent(title)}`;
+            if (wikiDetail.status === 'fulfilled' && wikiDetail.data.query) {
+                const pages = wikiDetail.data.query.pages;
+                const page = Object.values(pages)[0];
+                if (page.extract) {
+                    const parts = page.extract.split('\n').filter(p => p.trim().length > 20);
+                    intro = parts[0] || intro;
+                    detailed = parts.slice(1, 8).join('\n\n');
+                }
             }
 
-            // --- PROCESS WEB/GENERAL DATA ---
+            // --- EXTRACT WEB ---
             let webSummary = "";
-            if (ddgRes.status === 'fulfilled' && ddgRes.data.AbstractText) {
-                webSummary = ddgRes.data.AbstractText;
+            if (ddgDetail.status === 'fulfilled' && ddgDetail.data.AbstractText) {
+                webSummary = ddgDetail.data.AbstractText;
             }
 
-            // --- PROCESS ACADEMIC DATA ---
+            // --- EXTRACT ACADEMIC ---
             let academicList = [];
-            if (academicRes.status === 'fulfilled' && academicRes.data.message.items) {
-                academicList = academicRes.data.message.items.map(item => ({
-                    title: item.title[0],
-                    doi: item.URL
+            if (academicDetail.status === 'fulfilled' && academicDetail.data.message && academicDetail.data.message.items) {
+                academicList = academicDetail.data.message.items.map(item => ({
+                    title: item.title ? item.title[0] : "Untitled Paper",
+                    link: item.URL || "#"
                 }));
             }
 
             return {
-                title,
+                title: targetTitle,
                 intro,
                 webSummary,
                 detailed,
                 academicList,
-                url: wikiLink
+                url
             };
+
         } catch (e) {
-            console.error("Search Error:", e);
-            return null;
+            console.error("CRITICAL SEARCH ERROR:", e);
+            return {
+                title: "System Error",
+                intro: "The connection to global research databases was interrupted.",
+                detailed: "Please ensure your server has active internet access.",
+                academicList: [],
+                url: "#"
+            };
         }
     }
 }
