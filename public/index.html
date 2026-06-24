@@ -3,39 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sapiens AI | Deep Research</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <title>Sapiens AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="blueprint-dots"></div>
+    <div class="blueprint-bg"></div>
 
-    <!-- Top Left Google-Site Style Navigation -->
-    <nav class="history-nav">
-        <span class="nav-header">Archive History</span>
-        <div id="hist" class="history-stack"></div>
+    <nav class="side-history">
+        <span class="nav-label">Archive History</span>
+        <div id="hist" class="hist-list"></div>
     </nav>
 
-    <div class="app-container">
+    <div class="container">
         <header class="hero">
-            <div class="logo-group">
-                <div class="logo-square"></div>
+            <div class="logo">
+                <div class="dot"></div>
                 <h1>Sapiens AI</h1>
             </div>
-            <p class="tagline">Educational Synthesis Engine</p>
-
-            <div class="search-wrap">
-                <input type="text" id="q" placeholder="Enter a topic for research...">
-                <button onclick="doSearch()">Research</button>
+            <p class="tag">Knowledge Synthesis Engine</p>
+            
+            <div class="search-bubble">
+                <input type="text" id="q" placeholder="Enter research topic...">
+                <button onclick="doSearch()">Generate Page</button>
             </div>
         </header>
 
         <div id="loader" class="hide">
-            <div class="loader-line"></div>
-            <p>Accessing Global Knowledge Bases...</p>
+            <div class="spin"></div>
+            <p>Scanning global archives...</p>
         </div>
 
-        <main id="output" class="report-fade-in"></main>
+        <main id="output"></main>
     </div>
     <script src="app.js"></script>
 </body>
