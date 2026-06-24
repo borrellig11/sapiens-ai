@@ -1,12 +1,14 @@
 async function doSearch() {
-    const q = document.getElementById('q').value;
+    const qInput = document.getElementById('q');
+    const q = qInput.value.trim();
     const out = document.getElementById('output');
     const loader = document.getElementById('loader');
     
-    if (!q.trim()) return;
+    if (!q) return;
 
-    loader.className = ""; // Show loader
-    out.style.opacity = "0"; // Prep for animation
+    loader.classList.remove('hide');
+    out.innerHTML = "";
+    out.style.opacity = "0";
 
     try {
         const res = await fetch('/api/search', {
@@ -14,39 +16,46 @@ async function doSearch() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query: q })
         });
+
+        if (!res.ok) throw new Error("Server response failed");
+
         const d = await res.json();
-        loader.className = "hide";
+        loader.classList.add('hide');
 
-        let academicHTML = d.academicList.length > 0 
-            ? d.academicList.map(a => `<a href="${a.doi}" target="_blank" class="academic-link">↗ ${a.title.substring(0, 40)}...</a>`).join('')
-            : "No academic papers found.";
+        // Layout the Academic bibliography
+        let academicHTML = d.academicList && d.academicList.length > 0 
+            ? d.academicList.map(a => `<a href="${a.link}" target="_blank" class="academic-link">↗ ${a.title.substring(0, 50)}...</a>`).join('')
+            : "<p style='font-size:0.8rem; opacity:0.5'>No scholarly citations currently indexed for this query.</p>";
 
+        // Construct the Magazine-style Report
         out.innerHTML = `
             <div class="report-card">
+                <p style="font-size:0.7rem; letter-spacing:3px; opacity:0.5; margin-bottom:10px">RESEARCH_DOSSIER // ${new Date().getFullYear()}</p>
                 <h2>${d.title}</h2>
-                <p style="font-family:var(--font-sans); color:var(--text-muted); font-size:0.9rem">GEN_ID: ${Math.random().toString(36).substr(2, 9).toUpperCase()} | SOURCE: GLOBAL_AGGREGATE</p>
                 
-                <h3>Abstract</h3>
+                <h3>I. Abstract</h3>
                 <p>${d.intro}</p>
                 
-                ${d.webSummary ? `<h3>Contextual Insights</h3><p>${d.webSummary}</p>` : ''}
+                ${d.webSummary ? `<h3>II. General Synthesis</h3><p>${d.webSummary}</p>` : ''}
                 
-                <h3>In-Depth Analysis</h3>
-                <p>${d.detailed.replace(/\n/g, '<br><br>')}</p>
+                ${d.detailed ? `<h3>III. Comprehensive Analysis</h3><p>${d.detailed.replace(/\n/g, '<br><br>')}</p>` : ''}
                 
-                <h3>Scholarly Bibliography</h3>
+                <h3>IV. Bibliography & Academic Citations</h3>
                 <div class="academic-pills">${academicHTML}</div>
                 
-                <div style="margin-top:60px">
-                    <a href="${d.url}" target="_blank" style="color:black; font-weight:bold; text-decoration:none; border-bottom: 2px solid black;">View Original Repository</a>
+                <div style="margin-top:60px; border-top:1px solid #e8e4db; padding-top:20px;">
+                    <a href="${d.url}" target="_blank" style="color:black; font-weight:bold; text-decoration:none; border-bottom: 2px solid black;">ACCESS FULL REPOSITORY</a>
                 </div>
             </div>
         `;
-        out.style.opacity = "1";
+        
+        // Trigger Fade-In
+        setTimeout(() => { out.style.opacity = "1"; }, 50);
         loadHistory();
     } catch (e) {
-        loader.className = "hide";
-        out.innerHTML = "<div class='report-card'>Error connecting to global archives.</div>";
+        loader.classList.add('hide');
+        out.innerHTML = `<div class="report-card"><h3>Connection Failed</h3><p>Could not retrieve data. Check your terminal for errors.</p></div>`;
+        out.style.opacity = "1";
     }
 }
 
@@ -55,7 +64,7 @@ async function loadHistory() {
         const res = await fetch('/api/history');
         const d = await res.json();
         const histDiv = document.getElementById('hist');
-        if (d.length > 0) {
+        if (d && d.length > 0) {
             histDiv.innerHTML = d.map(h => `<span class="hpill" onclick="document.getElementById('q').value='${h.query}';doSearch()">${h.query}</span>`).join('');
         }
     } catch (e) {}
