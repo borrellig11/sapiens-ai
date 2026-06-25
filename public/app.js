@@ -6,7 +6,7 @@ async function doSearch() {
     if (!q.trim()) return;
 
     loader.classList.remove('hide');
-    out.innerHTML = "";
+    out.innerHTML = ""; // Clear old result
 
     try {
         const res = await fetch('/api/search', {
@@ -20,23 +20,23 @@ async function doSearch() {
         out.innerHTML = `
             <div class="report-card">
                 <h2>${d.title}</h2>
-                <p style="opacity:0.4; font-size:0.7rem; margin-bottom:40px;">// ACADEMIC_DOSSIER_GEN_3</p>
+                <p style="opacity:0.4; font-size:0.7rem; margin-bottom:40px;">// ACADEMIC_DOSSIER_SYNTHESIS</p>
                 
                 <h3>I. Introduction</h3>
                 <p>${d.intro}</p>
                 
-                ${d.background ? `<h3>II. Historical Context</h3><p>${d.background}</p>` : ''}
+                ${d.background ? `<h3>II. Historical Context</h3><p>${d.background.replace(/\n/g, '<br><br>')}</p>` : ''}
                 
                 ${d.concepts ? `<h3>III. Comprehensive Analysis</h3><p>${d.concepts.replace(/\n/g, '<br><br>')}</p>` : ''}
                 
                 <hr style="margin-top:50px; border:0; border-top:1px solid #eee">
-                <a href="${d.url}" target="_blank" style="color:black; font-weight:bold; text-decoration:none">↗ View Verified Record</a>
+                <a href="${d.url}" target="_blank" style="color:black; font-weight:bold; text-decoration:none">↗ View Full Academic Record</a>
             </div>
         `;
         loadHistory();
     } catch (e) {
         loader.classList.add('hide');
-        out.innerHTML = "<p>Connection error. Please try again.</p>";
+        out.innerHTML = "<p style='text-align:center'>Connection failed. Please restart your server.</p>";
     }
 }
 
